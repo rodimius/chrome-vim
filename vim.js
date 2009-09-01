@@ -22,4 +22,5 @@ inputKey('j', scrollDown);
 inputKey('k', scrollUp);
 inputKey('h', scrollLeft);
 inputKey('l', scrollRight);
-inputKey('alt+1', function () {});
+inputKey('ctrl+o', function () {history.go(-1);});
+inputKey('ctrl+i', function () {history.go(1);false;});
