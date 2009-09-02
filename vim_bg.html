@@ -1,0 +1,27 @@
+<script>
+  function newTab() {
+    chrome.tabs.create();
+  }
+
+  var out_msg = null;
+  chrome.extension.onConnect.addListener(function(port) {
+          console.assert(name == "tabs");
+          port.onMessage.addListener(function(msg) {
+                  out_msg = msg;
+                  console.log(msg);
+                  // Color our button based on whether a login element was found.
+                  switch(msg.method)
+                  {
+                          case "delete":
+                          chrome.tabs.getSelected(null, function (tab) {
+                                  console.log(tab);
+                                  chrome.tabs.remove(tab.id);
+                          });
+                          break;
+                          default:
+                          console.log("message failed");
+                  }
+          });
+  });
+
+</script>
