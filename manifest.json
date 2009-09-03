@@ -3,6 +3,7 @@
   "version": "0.1",
   "description": "Vim style keybindings for chrome.",
   "background_page": "vim_bg.html",
+  "toolstrips": ["vim_strip.html"],
   "permissions": ["tabs"],
   "content_scripts": [
   {

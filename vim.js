@@ -33,6 +33,16 @@ function deleteTab() {
         port.postMessage({method:"delete"});
 }
 
+function nextTab() {
+        port.postMessage({method:"next"});
+        return false;
+}
+
+function prevTab() {
+        port.postMessage({method:"previous"});
+        return false;
+}
+
 // big and hairy like a whale
 function createCmdLine() {
         if (!vi_cmd_line) 
@@ -81,6 +91,8 @@ function unsearch() {
         inputKey('l', scrollRight);
         specialKey('ctrl+o', function () {history.go(-1);return false;});
         specialKey('ctrl+i', function () {history.go(1);return false;});
+        specialKey('ctrl+p', prevTab);
+        specialKey('ctrl+n', nextTab);
         inputKey('d', deleteTab);
         specialKey('esc', function () {$(":input").blur(); unsearch();});
         inputKey('f', find);
