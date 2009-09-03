@@ -22,15 +22,19 @@ function scrollRight() {
 }
 
 function inputKey(inKey, keyFunc) {
-        $(document).bind('keydown', {combi:inKey, disableInInput: true}, keyFunc)
+        $(document).bind('keydown', {combi:inKey, disableInInput: true}, keyFunc);
 }
 
 function specialKey(inKey, keyFunc) {
-        $(document).bind('keydown', {combi:inKey, disableInInput: false}, keyFunc)
+        $(document).bind('keydown', {combi:inKey, disableInInput: false}, keyFunc);
 }
 
 function deleteTab() {
         port.postMessage({method:"delete"});
+}
+
+function refresh() {
+        location.reload(true);
 }
 
 // big and hairy like a whale
@@ -81,6 +85,7 @@ function unsearch() {
         inputKey('l', scrollRight);
         specialKey('ctrl+o', function () {history.go(-1);return false;});
         specialKey('ctrl+i', function () {history.go(1);return false;});
+        inputKey('r', refresh);
         inputKey('d', deleteTab);
         specialKey('esc', function () {$(":input").blur(); unsearch();});
         inputKey('f', find);
