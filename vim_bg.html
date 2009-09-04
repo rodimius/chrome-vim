@@ -3,13 +3,79 @@
     chrome.tabs.create();
   }
 
-  var out_msg = null;
+  //these two functions are horrible
+  function changeTab(inFunc) {
+          chrome.windows.getCurrent(function (win) {
+                  console.log(win);
+                  chrome.tabs.getAllInWindow(win.id, function (tabs) {
+                          console.log(tabs);
+                          chrome.tabs.getSelected(null, function (tab) {
+                                  console.log(tab);
+                                  prev_index = inFunc(tab.index, tabs.length);
+                                  chrome.tabs.update(tabs[prev_index].id, {selected: true});
+                          });
+                  });
+          });
+  }
+
+  function prevTab() {
+          changeTab(function (index, length) {
+                  out_index = index - 1;
+                  if (out_index < 0) {
+                          out_index = length -1;
+                  }
+                  return out_index;
+          });
+  }
+
+  function nextTab() {
+          changeTab(function (index, length) {
+                  out_index = index + 1;
+                  if (out_index > length -1) {
+                          out_index = 0;
+                  }
+                  return out_index;
+          });
+  }
+
+  function prevTabOld() {
+          chrome.windows.getCurrent(function (win) {
+                  console.log(win);
+                  chrome.tabs.getAllInWindow(win.id, function (tabs) {
+                          console.log(tabs);
+                          chrome.tabs.getSelected(null, function (tab) {
+                                  console.log(tab);
+                                  prev_index = tab.index - 1;
+                                  if (prev_index < 0) {
+                                          prev_index = tabs.length -1;
+                                  }
+                                  chrome.tabs.update(tabs[prev_index].id, {selected: true});
+                          });
+                  });
+          });
+  }
+
+  function nextTabOld() {
+          chrome.windows.getCurrent(function (win) {
+                  console.log(win);
+                  chrome.tabs.getAllInWindow(win.id, function (tabs) {
+                          console.log(tabs);
+                          chrome.tabs.getSelected(null, function (tab) {
+                                  console.log(tab);
+                                  next_index = tab.index + 1;
+                                  if (next_index > tabs.length -1) {
+                                          next_index = 0;
+                                  }
+                                  chrome.tabs.update(tabs[next_index].id, {selected: true});
+                          });
+                  });
+          });
+  }
+
   chrome.extension.onConnect.addListener(function(port) {
           console.assert(name == "tabs");
           port.onMessage.addListener(function(msg) {
-                  out_msg = msg;
                   console.log(msg);
-                  // Color our button based on whether a login element was found.
                   switch(msg.method)
                   {
                           case "delete":
@@ -17,6 +83,12 @@
                                   console.log(tab);
                                   chrome.tabs.remove(tab.id);
                           });
+                          break;
+                          case "next":
+                          nextTab();
+                          break;
+                          case "previous":
+                          prevTab();
                           break;
                           default:
                           console.log("message failed");

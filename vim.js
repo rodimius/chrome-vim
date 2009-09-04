@@ -37,6 +37,16 @@ function refresh() {
         location.reload(true);
 }
 
+function nextTab() {
+        port.postMessage({method:"next"});
+        return false;
+}
+
+function prevTab() {
+        port.postMessage({method:"previous"});
+        return false;
+}
+
 // big and hairy like a whale
 function createCmdLine() {
         if (!vi_cmd_line) 
@@ -86,6 +96,8 @@ function unsearch() {
         specialKey('ctrl+o', function () {history.go(-1);return false;});
         specialKey('ctrl+i', function () {history.go(1);return false;});
         inputKey('r', refresh);
+        specialKey('ctrl+p', prevTab);
+        specialKey('ctrl+n', nextTab);
         inputKey('d', deleteTab);
         specialKey('esc', function () {$(":input").blur(); unsearch();});
         inputKey('f', find);
