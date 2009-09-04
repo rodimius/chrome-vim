@@ -1,15 +1,17 @@
 {
-  "name": "Chrome-Vim",
-  "version": "0.1",
-  "description": "Vim style keybindings for chrome.",
-  "background_page": "vim_bg.html",
-  "permissions": ["tabs"],
-  "content_scripts": [
-  {
-          "matches": ["http://*/*", "https://*/*", "ftp://*/*"],
-          "js": ["jquery-1.3.2.min.js", "jquery.hotkeys.js", "vim.js"],
-          "css": ["vim.css"],
-          "run_at": "document_start"
-  }
-  ]
+        "format_version": 1,
+                "id": "4564564564564564564545645645645645645645",
+                "name": "Chrome-Vim",
+                "version": "0.1",
+                "description": "Vim style keybindings for chrome.",
+                "background_page": "vim_bg.html",
+                "permissions": ["tabs"],
+                "content_scripts": [
+                {
+                        "matches": ["http://*/*", "https://*/*", "ftp://*/*"],
+                        "js": ["jquery-1.3.2.min.js", "jquery.hotkeys.js", "vim.js"],
+                        "css": ["vim.css"],
+                        "run_at": "document_start"
+                }
+        ]
 }
