@@ -1,24 +1,29 @@
-var port = chrome.extension.connect({name: "tabs"});
-var scroll_amount = 50;
-var vi_cmd_line = null;
-var vi_bar=false;
-var bar_style = "position:fixed;width:100%;bottom:0px;background:black;"
+Vim = {};
+Vim.port = chrome.extension.connect({name: "tabs"});
+Vim.scroll_amount = 50;
+Vim.key_buffer = "";
+Vim.multiBinds = [];
 
 //always defined
 function scrollDown() {
-        window.scrollBy(0,scroll_amount);
+        window.scrollBy(0,Vim.scroll_amount);
 }
 
 function scrollUp() {
-        window.scrollBy(0,-scroll_amount);
+        window.scrollBy(0,-Vim.scroll_amount);
 }
 
 function scrollLeft() {
-        window.scrollBy(-scroll_amount,0);
+        window.scrollBy(-Vim.scroll_amount,0);
 }
 
 function scrollRight() {
-        window.scrollBy(scroll_amount,0);
+        window.scrollBy(Vim.scroll_amount,0);
+}
+
+function topOfPage() {
+        //lol
+        window.scroll(0,0);
 }
 
 function inputKey(inKey, keyFunc) {
@@ -29,8 +34,36 @@ function specialKey(inKey, keyFunc) {
         $(document).bind('keydown', {combi:inKey, disableInInput: false}, keyFunc);
 }
 
+function unKey(inkey) {
+        $(document).unbind('keydown', inKey);
+}
+
+var multiKeyFunc = null;
+var multiKeysArr = null;
+function multiBind(inKeys, keyFunc) {
+        if (inKeys.indexOf(" ") != -1) {
+                inKeysArr = inKeys.split(' ');
+                inKey = inKeysArr.shift();
+                Vim.multiBinds.push(inKey);
+                multiKeyFunc = keyFunc;
+                multiKeysArr = inKeysArr;
+                inputKey(inKey, function () {
+                                Vim.key_buffer = inKey;
+                                unKey(inKey);
+                                setTimeout(function (Vim) {
+                                        multiBind(inKeysArr.join(" "), multiKeyFunc)}, 100);
+                                });
+        } else {
+                inputKey(inKeys, function () {
+                                keyFunc();
+                                unKey(inKeys);
+                                setTimeout(bindDefaults, 100);
+                                });
+        }
+}
+
 function deleteTab() {
-        port.postMessage({method:"delete"});
+        Vim.port.postMessage({method:"delete"});
 }
 
 function refresh() {
@@ -38,40 +71,23 @@ function refresh() {
 }
 
 function nextTab() {
-        port.postMessage({method:"next"});
+        Vim.port.postMessage({method:"next"});
         return false;
 }
 
 function prevTab() {
-        port.postMessage({method:"previous"});
+        Vim.port.postMessage({method:"previous"});
         return false;
 }
 
 // big and hairy like a whale
 function createCmdLine() {
-        if (!vi_cmd_line) 
-        {
-                $('body').append('<div id="vi_bar" style=' + bar_style + '><input id="vi_cmd_line" onblur="vi_bar.setAttribute(\'style\', \'display:none;\');" type="text" style="width:100%" /></div>');
-                vi_bar = $('#vi_bar')
-                vi_cmd_line = $('#vi_cmd_line');
-        }
-        else
-        {
-                vi_bar.show();
-                vi_bar.css = bar_style;
-        }
-        vi_cmd_line.focus();
+        //do something good
 }
 
 // changes all key commands, binds all kinds of stuff
 function find() {
-        var links = $("a")
-        links.addClass("vim_link")
-        $("a:visible").each(function (link) {
-                        add_number(links[link], link);
-                        });
-        createCmdLine();
-        vi_cmd_line.value="";
+        //do something good
 }
 
 function add_number(elem, num) {
@@ -84,11 +100,8 @@ function add_number(elem, num) {
 }
 
 //rebinds all the standard commands
-function unsearch() {
-        $("a,:button").removeClass("vim_link");
-        $(".vim_nums").remove();
-}
-
+function bindDefaults() {
+        console.log("Binding Defaults");
         inputKey('j', scrollDown);
         inputKey('k', scrollUp);
         inputKey('h', scrollLeft);
@@ -99,5 +112,9 @@ function unsearch() {
         specialKey('ctrl+p', prevTab);
         specialKey('ctrl+n', nextTab);
         inputKey('d', deleteTab);
-        specialKey('esc', function () {$(":input").blur(); unsearch();});
+        specialKey('esc', function () {$(":input").blur();});
         inputKey('f', find);
+        multiBind('g g', topOfPage);
+}
+
+bindDefaults();
