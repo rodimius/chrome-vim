@@ -25,6 +25,11 @@ function topOfPage() {
         window.scroll(0,0);
 }
 
+function bottomOfPage() {
+        console.log("bottom");
+        window.scroll(0,999999999);
+}
+
 function inputKey(inKey, keyFunc) {
         $(document).bind('keydown', {combi:inKey, disableInInput: true}, keyFunc);
 }
@@ -94,6 +99,12 @@ function find() {
         //do something good
 }
 
+function reset() {
+        $(":input").blur();
+        unBindMultikeys();
+        bindDefaults();
+}
+
 function add_number(elem, num) {
         console.log(elem);
         var elem_top = elem.offsetTop;
@@ -116,8 +127,9 @@ function bindDefaults() {
         specialKey('ctrl+p', prevTab);
         specialKey('ctrl+n', nextTab);
         inputKey('d', deleteTab);
-        specialKey('esc', function () {$(":input").blur();});
+        specialKey('esc', reset);
         inputKey('f', find);
+        inputKey('shift+g', bottomOfPage);
         multiBind('g g', topOfPage);
 }
 
