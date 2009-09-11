@@ -2,6 +2,7 @@ Vim = {};
 Vim.port = chrome.extension.connect({name: "tabs"});
 Vim.scroll_amount = 50;
 Vim.key_buffer = "";
+Vim.multiBinds = [];
 
 //always defined
 function scrollDown() {
@@ -21,8 +22,7 @@ function scrollRight() {
 }
 
 function topOfPage() {
-        //lol
-        console.log(Vim.key_buffer);
+        window.scroll(0,0);
 }
 
 function inputKey(inKey, keyFunc) {
@@ -36,6 +36,34 @@ function specialKey(inKey, keyFunc) {
 function multiBind(inKeys, keyFunc) {
         inKey = inKeys.split(" ")[0];
         specialKey(inKey, function () {Vim.key_buffer = inKey;console.log(Vim.key_buffer);});
+}
+
+function unKey(inkey) {
+        $(document).unbind('keydown', inKey);
+}
+
+var multiKeyFunc = null;
+var multiKeysArr = null;
+function multiBind(inKeys, keyFunc) {
+        if (inKeys.indexOf(" ") != -1) {
+                inKeysArr = inKeys.split(' ');
+                inKey = inKeysArr.shift();
+                Vim.multiBinds.push(inKey);
+                multiKeyFunc = keyFunc;
+                multiKeysArr = inKeysArr;
+                inputKey(inKey, function () {
+                                Vim.key_buffer = inKey;
+                                unKey(inKey);
+                                setTimeout(function (Vim) {
+                                        multiBind(inKeysArr.join(" "), multiKeyFunc)}, 100);
+                                });
+        } else {
+                inputKey(inKeys, function () {
+                                keyFunc();
+                                unKey(inKeys);
+                                setTimeout(bindDefaults, 100);
+                                });
+        }
 }
 
 function deleteTab() {
@@ -76,7 +104,8 @@ function add_number(elem, num) {
 }
 
 //rebinds all the standard commands
-
+function bindDefaults() {
+        console.log("Binding Defaults");
         inputKey('j', scrollDown);
         inputKey('k', scrollUp);
         inputKey('h', scrollLeft);
@@ -90,3 +119,6 @@ function add_number(elem, num) {
         specialKey('esc', function () {$(":input").blur();});
         inputKey('f', find);
         multiBind('g g', topOfPage);
+}
+
+bindDefaults();
