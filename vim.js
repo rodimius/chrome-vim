@@ -2,7 +2,7 @@ Vim = {};
 Vim.port = chrome.extension.connect({name: "tabs"});
 Vim.scroll_amount = 50;
 Vim.key_buffer = "";
-Vim.multiBinds = [];
+Vim.multiBinds = {};
 
 //always defined
 function scrollDown() {
@@ -31,16 +31,17 @@ function bottomOfPage() {
 }
 
 function inputKey(inKey, keyFunc) {
-        $(document).bind('keydown', {combi:inKey, disableInInput: true}, keyFunc);
+        $(document).bind('keydown', {combi:inKey, disableInInput: true}, function () {
+                        keyFunc();
+                        reset;
+                        });
 }
 
 function specialKey(inKey, keyFunc) {
-        $(document).bind('keydown', {combi:inKey, disableInInput: false}, keyFunc);
-}
-
-function multiBind(inKeys, keyFunc) {
-        inKey = inKeys.split(" ")[0];
-        specialKey(inKey, function () {Vim.key_buffer = inKey;console.log(Vim.key_buffer);});
+        $(document).bind('keydown', {combi:inKey, disableInInput: false}, function () {
+                        keyFunc();
+                        reset();
+                        });
 }
 
 function unKey(inkey) {
